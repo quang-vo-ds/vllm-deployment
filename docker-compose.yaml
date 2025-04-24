@@ -1,0 +1,24 @@
+services:
+  bloomz-vllm:
+    image: vllm/vllm-openai:latest
+    container_name: bloomz-vllm
+    ports:
+      - "8000:8000"
+    volumes:
+      - type: bind
+        source: ./models
+        target: /models
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: ["--served-model-name", "$MODEL_NAME", "--model", "/models/$MODEL_NAME"]
+    networks:
+      - vnet
+
+networks:
+  vnet:
